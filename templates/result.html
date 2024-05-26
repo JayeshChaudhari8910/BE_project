@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('/static/7278636.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: rgba(249, 249, 249, 0.8);
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .header h2 {
+            font-size: 18px;
+            color: #666;
+        }
+        .emojis img {
+            width: 100px; /* Increased image size */
+            height: 100px; /* Increased image size */
+            margin-bottom: 20px; /* Space between emoji and text */
+        }
+        .emojis p {
+            font-size: 18px; /* Font size for emoji text */
+        }
+        .btn-container {
+            margin-top: 20px;
+        }
+        .btn-container a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-container a:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Emotion Detected 🎉</h1>
+        <p>The predicted emotion is: {{ emotion }}</p>
+        <div class="emojis">
+            {% if emotion == "Happy" %}
+                <img src="/static/happy.jpg" alt="Happy Emoji">
+                <p>You seem happy! Enjoy your day and spread positivity!</p>
+            {% elif emotion == "Sad" %}
+                <img src="/static/sad.jpg" alt="Sad Emoji">
+                <p>Feeling sad? It's okay to take some time for yourself and reach out to someone you trust.</p>
+            {% elif emotion == "Angry" %}
+                <img src="/static/angry.jpg" alt="Angry Emoji">
+                <p>Feeling angry? Take a deep breath and find healthy ways to manage your emotions.</p>
+            {% elif emotion == "Fear" %}
+                <img src="/static/fear.jpg" alt="Fear Emoji">
+                <p>Facing fear? Remember, it's okay to be scared sometimes. Take small steps towards overcoming your fears.</p>
+            {% elif emotion == "Neutral" %}
+                <img src="/static/neutral.jpg" alt="Neutral Emoji">
+                <p>You're feeling neutral? Take some time to reflect and find activities that bring you joy.</p>
+            {% endif %}
+        </div>
+        <div class="btn-container">
+            <a href="/">Return to Home</a>
+        </div>
+    </div>
+</body>
+</html>
+

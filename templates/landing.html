@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Emotion Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('/static/7278636.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px; /* Increased container width */
+            margin: 40px auto;
+            padding: 20px;
+            background-color: rgba(249, 249, 249, 0.8);
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center; /* Align items vertically */
+            justify-content: center; /* Center the content horizontally */
+        }
+        .logo {
+            max-width: 100px; /* Adjust the maximum width of the logo */
+            height: auto;
+            margin-right: 20px; /* Add margin for separation from header text */
+        }
+        .description {
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        .buttons {
+            margin-bottom: 20px;
+        }
+        .buttons a button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .buttons a button:hover {
+            background-color: #0056b3;
+        }
+        /* Styling for the additional image */
+        .additional-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            opacity: 0.9; /* Adjust opacity to make it transparent */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <img src="{{ url_for('static', filename='L.jpg') }}" alt="Logo" class="logo">
+            Speech Emotion Recognition
+        </h1>
+        <p class="description">Welcome to Speech Emotion Recognition System.</p>
+        <p class="description">Our Speech Emotion Recognition system helps you analyze emotions in speech using advanced machine learning techniques. Get started to explore more.</p>
+        <div class="buttons">
+            <a href="{{ url_for('login') }}"><button>Get Started</button></a>
+        </div>
+
+        <!-- New styled image below "Get Started" button -->
+        <img src="static/1_i9gcakEEggQvqsByNgBMFw.jpg" alt="Additional Image" class="additional-image">
+    </div>
+</body>
+</html>

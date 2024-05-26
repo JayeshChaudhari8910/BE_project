@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('/static/7278636.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: rgba(249, 249, 249, 0.8);
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        form {
+            margin: 20px auto;
+        }
+        input[type="file"] {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        canvas {
+            width: 100%;
+            max-width: 800px;
+            height: 200px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Speech Emotion Detection</h1>
+        {% if 'username' in session %}
+            <p>Hello, {{ session['username'] }}!</p>
+            <form action="{{ url_for('logout') }}" method="post">
+                <button type="submit">Logout</button>
+            </form>
+            <form action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" id="audioFile" required>
+                <button type="submit">Predict Emotion</button>
+            </form>
+            <div id="audioDetails"></div>
+            <canvas id="waveformCanvas"></canvas>
+            <audio controls id="audioPlayer"></audio>
+            <a download id="downloadLink" style="display: none;">Download Audio</a>
+        {% else %}
+            <a href="{{ url_for('login') }}"><button>Login</button></a>
+            <a href="{{ url_for('register') }}"><button>Register</button></a>
+        {% endif %}
+    </div>
+    <script src="{{ url_for('static', filename='logout.js') }}"></script>
+    <script>
+        const audioFileInput = document.getElementById('audioFile');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioDetails = document.getElementById('audioDetails');
+        const waveformCanvas = document.getElementById('waveformCanvas');
+        const downloadLink = document.getElementById('downloadLink');
+
+        audioFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            const fileSize = (file.size / 1024 / 1024).toFixed(2); // in MB
+            const duration = calculateDuration(file);
+
+            audioPlayer.src = URL.createObjectURL(file);
+            audioDetails.innerHTML = `File Size: ${fileSize} MB<br>Duration: ${duration}`;
+
+            drawWaveform(file);
+            downloadLink.href = audioPlayer.src;
+            downloadLink.style.display = 'inline';
+        });
+
+        function calculateDuration(file) {
+            const audio = document.createElement('audio');
+            audio.src = URL.createObjectURL(file);
+            return new Promise((resolve, reject) => {
+                audio.onloadedmetadata = () => {
+                    resolve(audio.duration.toFixed(2)); // in seconds
+                };
+                audio.onerror = reject;
+            });
+        }
+
+        async function drawWaveform(file) {
+            const audioContext = new AudioContext();
+            const audioSrc = audioContext.createMediaElementSource(audioPlayer);
+            const analyser = audioContext.createAnalyser();
+            audioSrc.connect(analyser);
+            audioSrc.connect(audioContext.destination);
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            const canvasCtx = waveformCanvas.getContext('2d');
+            canvasCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+
+            const draw = () => {
+                const WIDTH = waveformCanvas.width;
+                const HEIGHT = waveformCanvas.height;
+                analyser.getByteTimeDomainData(dataArray);
+                canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+                canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+                canvasCtx.lineWidth = 2;
+                canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+                canvasCtx.beginPath();
+                const sliceWidth = WIDTH * 1.0 / bufferLength;
+                let x = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * HEIGHT / 2;
+                    if (i === 0) {
+                        canvasCtx.moveTo(x, y);
+                    } else {
+                        canvasCtx.lineTo(x, y);
+                    }
+                    x += sliceWidth;
+                }
+                canvasCtx.lineTo(WIDTH, HEIGHT / 2);
+                canvasCtx.stroke();
+            };
+
+            audioPlayer.addEventListener('play', function() {
+                const animationFrameId = requestAnimationFrame(visualize);
+                function visualize() {
+                    draw();
+                    if (!audioPlayer.paused) {
+                        animationFrameId = requestAnimationFrame(visualize);
+                    }
+                }
+                visualize();
+
+                audioPlayer.addEventListener('pause', function() {
+                    cancelAnimationFrame(animationFrameId);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
